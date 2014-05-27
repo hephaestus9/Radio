@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content1 %}
+
+
+
+                    {% block content2 %}
+                    {% endblock %}
+
+                  </div>
+                  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jquery-checkbox/jquery.checkbox.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jquery-checkbox/jquery.safari-checkbox.css') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-checkbox/jquery.checkbox.min.js') }}"></script>
+                  <style>
+                  .ui-autocomplete {
+                    max-height: 230px;
+                    max-width: 280px;
+                    overflow-y: auto;
+                    overflow-x: hidden; /* add padding to account for vertical scrollbar */
+                    z-index:1000 !important;
+                    }
+                    .custom-combobox {
+                    position: relative;
+                    display: inline-block;
+                    }
+                    .custom-combobox-toggle {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    margin-left: -1px;
+                    padding: 0;
+                    /* support: IE7 */
+                    *height: 1.7em;
+                    *top: 0.1em;
+                    }
+                    .custom-combobox-input {
+                    margin: 0;
+                    padding: 0.3em;
+                    }
+                </style>
+                <script>
+                    (function( $ ) {
+                    $.widget( "custom.combobox", {
+                    _create: function() {
+                    this.wrapper = $( "<span>" )
+                    .addClass( "custom-combobox" )
+                    .insertAfter( this.element );
+                    this.element.hide();
+                    this._createAutocomplete();
+                    this._createShowAllButton();
+                    },
+                    _createAutocomplete: function() {
+                    var selected = this.element.children( ":selected" ),
+                    value = selected.val() ? selected.text() : "{{ currentStation }}";
+                    this.input = $( "<input>" )
+                    .appendTo( this.wrapper )
+                    .val( value )
+                    .attr( "title", "" )
+                    .addClass( "custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left" )
+                    .autocomplete({
+                    delay: 0,
+                    minLength: 0,
+                    source: $.proxy( this, "_source" )
+                    })
+                    .tooltip({
+                    tooltipClass: "ui-state-highlight"
+                    });
+                    this._on( this.input, {
+                    autocompleteselect: function( event, ui ) {
+                    ui.item.option.selected = true;
+                    this._trigger( "select", event, {
+                    item: ui.item.option
+                    });
+                    },
+                    autocompletechange: "_removeIfInvalid"
+                    });
+                    },
+                    _createShowAllButton: function() {
+                    var input = this.input,
+                    wasOpen = false;
+                    $( "<a>" )
+                    .attr( "tabIndex", -1 )
+                    .attr( "title", "Show All Items" )
+                    .tooltip()
+                    .appendTo( this.wrapper )
+                    .button({
+                    icons: {
+                    primary: "ui-icon-triangle-1-s"
+                    },
+                    text: false
+                    })
+                    .removeClass( "ui-corner-all" )
+                    .addClass( "custom-combobox-toggle ui-corner-right" )
+                    .mousedown(function() {
+                    wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+                    })
+                    .click(function() {
+                    input.focus();
+                    // Close if already visible
+                    if ( wasOpen ) {
+                    return;
+                    }
+                    // Pass empty string as value to search for, displaying all results
+                    input.autocomplete( "search", "" );
+                    });
+                    },
+                    _source: function( request, response ) {
+                    var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+                    response( this.element.children( "option" ).map(function() {
+                    var text = $( this ).text();
+                    if ( this.value && ( !request.term || matcher.test(text) ) )
+                    return {
+                    label: text,
+                    value: text,
+                    option: this
+                    };
+                    }) );
+                    },
+                    _removeIfInvalid: function( event, ui ) {
+                    // Selected an item, nothing to do
+                    if ( ui.item ) {
+                    return;
+                    }
+                    // Search for a match (case-insensitive)
+                    var value = this.input.val(),
+                    valueLowerCase = value.toLowerCase(),
+                    valid = false;
+                    this.element.children( "option" ).each(function() {
+                    if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+                    this.selected = valid = true;
+                        return false;
+                    }
+                    });
+                    // Found a match, nothing to do
+                    if ( valid ) {
+                    return;
+                    }
+                    // Remove invalid value
+                    this.input
+                    .val( "" )
+                    .attr( "title", value + " didn't match any item" )
+                    .tooltip( "open" );
+                    this.element.val( "" );
+                    this._delay(function() {
+                    this.input.tooltip( "close" ).attr( "title", "" );
+                    }, 2500 );
+                    this.input.data( "ui-autocomplete" ).term = "";
+                    },
+                    _destroy: function() {
+                    this.wrapper.remove();
+                    this.element.show();
+                    }
+                    });
+                    })( jQuery );
+                    $(function() {
+                    $( "#combobox" ).combobox();
+                    $( "#stationscombobox" ).combobox({
+                        select: function( event, ui ) {
+                            console.log($("#stationscombobox").val())
+                            $.post("{{ url_for('changeStation') }}", $("#stationscombobox").val());
+                        }
+                    });
+                    $( "#toggle" ).click(function() {
+                    $( "#combobox, #stationscombobox" ).toggle();
+                    });
+                    });
+                </script>
+                <script>
+                    $("stationscombobox").change(function() {
+                        alert(this.value);
+                    });
+                </script>
+                <script type="text/javascript">
+                    $(document).ready(function() {
+                      // ":not([safari])" is desirable but not necessary selector
+                      $('input:checkbox:not([safari])').checkbox();
+                      $('input[safari]:checkbox').checkbox({cls:'jquery-safari-checkbox'});
+                      $('input:radio').checkbox();
+                    });
+                </script>
+                 <script>
+                    $(function() {
+                    $( "input[type=submit], button" )
+                    .button()
+                    //.click(function( event ) {
+                    //event.preventDefault();
+                    //});
+                    });
+                </script>
+
+                  <div id="sidebar" class="right">
+                    <div style="width:300px;height:70px">
+                        <iframe src="http://free.timeanddate.com/clock/i3pk45af/n2342/fn6/fs16/fcfff/tc000/ftb/pa8/tt0/tw1/tm1/th2/ta1/tb4" frameborder="0" width="300" height="58"></iframe>
+                        <div class="cl">&nbsp;</div>
+                    </div>
+                    <div class="box" style="height:300px">
+                        <h2>Station Select</h2>
+                         <select id="stationscombobox" name="stations" style="height:275px">
+                                 <option value="" selected>{{ currentStation }}</option>
+                                {% for station in stations %}
+                                    <option value="{{ station[0].id }}">{{ station[1] }}</option>
+                                {% endfor %}
+                             </select>
+                    </div>
+                    <div class="box">
+                      <h2 class="title">Pithos v0.3</h2>
+                      <div class="follow-item">
+                        <p><span class="author">Copyright &#xA9; 2012 Kevin Mehall</span>: A Pandora Radio client for the GNOME Desktop.  <a target="_blank" href="http://kevinmehall.net/p/pithos">Pithos</a></p>
+                      </div>
+                    </div>
+                    <div class="box">
+                      <h2 class="title">Maraschino</h2>
+                      <div class="follow-item">
+                        <p><span class="author">Bradley Abrahams</span>: A frontend for XBMC HTPCs.  <a target="_blank" href="http://www.maraschinoproject.com/">Maraschino</a></p>
+                      </div>
+                     </div>
+                     <div class="box" style="visibility:hidden;height:200px"/>
+
+{% endblock %}

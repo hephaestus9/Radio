@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
+
+  <head>
+    <title>{% block page_title %}RADIO{% endblock %}</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/RadioTower_Icon.ico') }}" sizes="64x64" type="image/x-icon">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/RadioTower_Icon.ico') }}" type="image/x-icon">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/module-currently_playing.css') }}" type="text/css" media="all" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui-1.10.3.custom.css') }}" />
+
+
+    <!--[if IE 6]><script src="js/png-fix.js" type="text/javascript" charset="utf-8"></script><![endif]-->
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="{{ url_for('static', filename='js/jquery/jquery-ui-1.10.3.custom.js') }}"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+
+
+    <script type="text/javascript">
+    function processKey(e)
+    {
+        if (null == e)
+            e = window.event ;
+            if (e.keyCode == 13)  {
+                document.getElementById("login").click();
+                return false;
+            }
+    }
+    </script>
+
+    <script>
+      $(function() {
+        $( "#accordion").accordion({
+          collapsible: false,
+          heightStyle: "fill",
+          header: "> div > h3"
+        })
+        .sortable({
+        axis: "y",
+        handle: "h3",
+        stop: function( event, ui ) {
+          // IE doesn't register the blur when sorting
+          // so trigger focusout handlers to remove .ui-state-focus
+          ui.item.children( "h3" ).triggerHandler( "focusout" );
+        }
+        });
+      });
+
+      $(function() {
+        $( "#sideBarAccordion").accordion({
+          collapsible: true,
+          heightStyle: "fill",
+          header: "> div > h3"
+        })
+        .sortable({
+        axis: "y",
+        handle: "h3",
+        stop: function( event, ui ) {
+          // IE doesn't register the blur when sorting
+          // so trigger focusout handlers to remove .ui-state-focus
+          ui.item.children( "h3" ).triggerHandler( "focusout" );
+        }
+        });
+      });
+
+      $(function() {
+        $( "#graphAccordion").accordion({
+          collapsible: false,
+          heightStyle: "fill",
+          header: "> div > h3"
+        })
+        .sortable({
+        axis: "y",
+        handle: "h3",
+        stop: function( event, ui ) {
+          // IE doesn't register the blur when sorting
+          // so trigger focusout handlers to remove .ui-state-focus
+          ui.item.children( "h3" ).triggerHandler( "focusout" );
+        }
+        });
+      });
+
+      $(function() {
+        var tabs = $( "#tabs" ).tabs();
+        tabs.find( ".ui-tabs-nav" ).sortable({
+          axis: "x",
+          stop: function() {
+            tabs.tabs( "refresh" );
+          }
+        });
+      });
+
+      $(function() {
+        var tabs1 = $( "#tabs1" ).tabs();
+        tabs1.find( ".ui-tabs-nav" ).sortable({
+          axis: "x",
+          stop: function() {
+            tabs1.tabs1( "refresh" );
+          }
+        });
+      });
+
+      $(function() {
+        $( "input[type=submit]", "button")
+        .button()
+        .click(function( event ) {
+            event.preventDefault();
+          });
+      });
+
+      $(function() {
+        $( "#check1" ).button();
+        $( "#check2" ).button();
+        $( "#check3" ).button();
+        $( "#check4" ).button();
+        $( "#check5" ).button();
+        $( "#check6" ).button();
+        $( "#format" ).buttonset();
+        $( "#format1" ).buttonset();
+      });
+
+    </script>
+    <style>
+      #format { margin-top: 2em; }
+    </style>
+
+  </head>
+
+  <body id="page1" onload="JavaScript:setInterval(function(){$.ajax({
+           type: 'POST',
+           url: '{{url_for('check_still_playing')}}',
+           data: 'whatever=2',
+           success: function() {
+                    window.location.reload(true);
+                    }
+           });
+          }, 250);">
+
+    <!-- fanart container -->
+
+    <div id="fanart" style="display: none;"></div>
+        <div id="wrapper">
+            <!--==============================header=================================-->
+              <div id="header">
+                <div class="header-bg">
+                  <div class="shell">
+
+
+                    {% block content1 %}
+                    {% endblock %}
+
+                    </div>
+                  </div>
+                  <div class="cl">&nbsp;</div>
+                </div>
+              </div>
+              <div id="footer-push" class="notext">&nbsp;</div>
+            </div>
+            <!--==============================currently_playing=================================-->
+            <div id="currently_playing" >
+                <div class="visibility">
+                    <ul>
+                      <li class="close"></li>
+                      <li class="minimize"></li>
+                    </ul>
+                </div>
+                <div class="thumb">
+                        <img class="albumart" src="{{ url_for('static', filename='cache/') }}{{ thumbnail }}">
+                        <p class="item_info_artist">
+                    <span class="playlist" title="View playlist"><strong>Currently playing:</strong></span><br>
+                    <span>
+                      {{ artist }}
+                    </span>
+                    <span class="separator">-</span>
+                    <span>
+                      {{ album }}
+                    </span>
+                    <br>{{ title }}
+                </div>
+
+                <div class="controls">
+                    <div class="previous" data-command="previous" title="Previous" style="visibility:hidden">Previous</div>
+                    <div class="stop" data-command="stop" title="Stop" onclick="$.ajax({
+                                                                               type: 'POST',
+                                                                               url: '{{url_for('stop_song')}}',
+                                                                               data: 'whatever=2'
+                                                                               });
+                                                                              ">Stop</div>
+                    <div class="play_pause" data-command="play_pause" title="Play/Pause" onclick="$.ajax({
+                                                                               type: 'POST',
+                                                                               url: '{{url_for('play_pause')}}',
+                                                                               data: 'whatever=2'
+                                                                               });
+                                                                              ">Play/Pause</div>
+                    <div class="next" data-command="next" title="Next" onclick="$.ajax({
+                                                                               type: 'POST',
+                                                                               url: '{{url_for('next_song')}}',
+                                                                               data: 'whatever=2'
+                                                                               });
+                                                                              ">Next</div>
+            </div>
+            <div class="volume" data-volume="{{ volume }}%">
+                <div class="volume-icon"></div>
+                <div class="bar">
+                  <div class="inner" style="height: {{ volume/2 }}px;"></div>
+                </div>
+          </div>
+            </div>
+            <!--==============================footer=================================-->
+            <div id="footer">
+              <div class="copyright">
+                <p class="left">Copyright &copy; 2013, Jeramy Brian, All Rights Reserved</p>
+                <p class="right"><a href="http://www.free-css.com/">Free CSS Templates</a> by <a href="http://chocotemplates.com">Chocotemplates.com</a></p>
+                <div class="cl"></div>
+              </div>
+            </div>
+
+
+    <!--JavaScript-->
+    <!--<script>var WEBROOT = "{{ webroot }}";</script>-->
+
+  </body>
+</html>

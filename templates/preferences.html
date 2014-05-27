@@ -1,0 +1,223 @@
+{% extends "home.html" %}
+
+{% block content2 %}
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jquery-checkbox/jquery.checkbox.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/jquery-checkbox/jquery.safari-checkbox.css') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-checkbox/jquery.checkbox.min.js') }}"></script>
+
+
+
+                    <div id="navigation">
+                      <ul>
+                        <li><a href="#" class="active">Home</a></li>
+                        <li><a target="_blank" href="http://www.pandora.com">Pandora</a></li>
+                        <li class="last"><a target="_blank" href="https://archive.org/details/oldtimeradio">Internet Archive</a></li>
+                      </ul>
+                      <div class="cl">&nbsp;</div>
+                    </div>
+                    <div class="cl">&nbsp;</div>
+                    <h1 id="logo" class="notext" style="width:158px;height:175px"><a href="#">Old Radio</a></h1>
+                    <h1 id="banner">RADIO</h1>
+                    <div class="cl">&nbsp;</div>
+                    <div id="sub-nav">
+                      <ul>
+                        <li><a href="{{url_for('index')}}" >Songs</a></li>
+                        <li><a href="#">Shows</a></li>
+                        <li><a href="#">Shows</a></li>
+                        <li><a href="#">Streams</a></li>
+                        <li class="last"><a href="{{url_for('pandoraPreferences')}}" class="active">Preferences</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            <!--==============================content================================-->
+            <div id="main">
+                <div class="shell">
+                  <div id="content" class="left">
+
+                    <div id="accordion" style="width: 750px;height: 800px">
+                      <div class="group">
+                      <h3>Radio Preferences</h3>
+                      <div id="form1">
+                      <form id="settingsForm" action="{{url_for('save_settings')}}" method="post" name="setting_form">
+                            <table style="width:710px">
+                            <tr>
+                                <th>Pandora Account</th>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td><label>Username: </label></td>
+                            <td><input name="user" id="user" style="width:235px" value="{{username}}"></td>
+                            </tr>
+                            <tr>
+                            <td><label>Password: </label></td>
+                            <td><input name="password" type="password" id="password" style="width:235px" value="{{password}}"></td>
+                            </tr>
+                            <tr>
+                            <td><label for="pandoraOne" style="width:235px">Pandora One Subscriber</label></td>
+                            <td>
+                                {% if pandoraOne == "checked" %}
+                                    <input name="pandoraOne" type="checkbox" id="pandoraOne" checked>
+                                {% else %}
+                                    <input name="pandoraOne" type="checkbox" id="pandoraOne" >
+                                {% endif %}
+                            </td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td></td>
+                            <td><a target="_blank" href="http://www.pandora.com">Create an account at Pandora.com</a></td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th>Advanced Settings</th>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td><label>Audio Quality: </label></td>
+                            <td><div class="ui-widget">
+
+                            <select id="combobox" name="audioQuality" style="width:235px">
+                                <option value="">Select an option...</option>
+                                {% for item in audioQualitySettings %}
+                                    {% if item["name"] == audioQuality %}
+                                        <option value="{{item["name"]}}" selected>{{item["value"]}}</option>
+                                    {% else %}
+                                        <option value="{{item["name"]}}">{{item["value"]}}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div></td>
+                            </tr>
+                            <tr>
+                            <td><label>Proxy URL: </label></td>
+                            <td><input name="proxyURL" id="proxyURL" style="width:235px" value="{{proxy}}"></td>
+                            </tr>
+                            <tr>
+                            <td><label>Control Proxy URL: </label></td>
+                            <td><input name="controlProxyURL" id="controlProxyURL" style="width:235px" value="{{controlProxy}}"></td>
+                            </tr>
+                            <tr>
+                            <td><label>Control Proxy PAC: </label></td>
+                            <td><input name="controlProxyPAC" id="controlProxyPAC" style="width:235px" disabled="disabled"></td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th>Plugin Options</th>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td><label for="screensaver"  style="width:235px">Pause when screensaver is active.</label></td>
+                            <td>
+                                {% if screensaverpause == "checked" %}
+                                    <input name="screensaver" type="checkbox" id="screensaver" checked>
+                                {% else %}
+                                    <input name="screensaver" type="checkbox" id="screensaver" >
+                                {% endif %}
+                            </td>
+                            </tr>
+                            <tr>
+                            <td><label for="icon"  style="width:235px">Show notification area icon.</label></td>
+                            <td>
+                                {% if icon == "checked" %}
+                                    <input name="icon" type="checkbox" id="icon" checked>
+                                {% else %}
+                                    <input name="icon" type="checkbox" id="icon" >
+                                {% endif %}
+                            </td>
+                            </tr>
+                            <tr>
+                            <td><label for="songsUpdate"  style="width:235px">Show song notifications</label></td>
+                            <td>
+                                {% if songsNotify == "checked" %}
+                                    <input name="songsUpdate" type="checkbox" id="songsUpdate" checked>
+                                {% else %}
+                                    <input name="songsUpdate" type="checkbox" id="songsUpdate">
+                                {% endif %}
+                            </td>
+                            </tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <th>Last.fm Scrobbling</th>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td></td>
+                            <td>
+                                <button style="width:235px" onclick="document.forms['lastFM'].submit();">Authorize Last.fm</button>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                    <button onclick="document.forms['settingsForm'].submit();">Save Settings</button>
+                            </td>
+                            </tr>
+                            </table>
+                            </form>
+                            <form id="lastFM" target="_blank" action="http://www.pandora.com"></form>
+
+
+
+
+                      </div>
+                      </div>
+
+
+                    </div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "home.html" %}
+
+{% block content2 %}
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+                    <div id="navigation">
+                      <ul>
+                        <li><a href="#" class="active">Home</a></li>
+                        <li><a target="_blank" href="http://www.pandora.com">Pandora</a></li>
+                        <li class="last"><a target="_blank" href="https://archive.org/details/oldtimeradio">Internet Archive</a></li>
+                      </ul>
+                      <div class="cl">&nbsp;</div>
+                    </div>
+                    <div class="cl">&nbsp;</div>
+                    <h1 id="logo" class="notext" style="width:158px;height:175px"><a href="#">Old Radio</a></h1>
+                    <h1 id="banner">RADIO</h1>
+                    <div class="cl">&nbsp;</div>
+                    <div id="sub-nav">
+                      <ul>
+                        <li><a href="{{url_for('index')}}" class="active">Songs</a></li>
+                        <li><a href="#">Shows</a></li>
+                        <li><a href="#">Streams</a></li>
+                        <li class="last"><a href="{{url_for('pandoraPreferences')}}">Preferences</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            <!--==============================content================================-->
+            <div id="main">
+                <div class="shell">
+                  <div id="content" class="left">
+
+                    <div id="accordion" style="width: 750px;height: 800px">
+                      <div class="group">
+                      <h3>{{ currentStation }}</h3>
+                      <div>
+                        {% for item in upcomingSongs[index + 1:] %}
+                        <div class="box">
+                          <div class="box-body">
+                            <img style="max-width:190px" src="{{ url_for('static', filename='cache/') }}{{ item[0].artRadio }}">
+                            <h2 style="float:right">{{item[0].title}}</h2>
+                            <a href="{{item[0].songDetailURL}}" class="notext">Song Details</a> </div>
+                          <div class="cl">&nbsp;</div>
+                          <a href="#" class="close notext">&nbsp;</a> </div>
+                        {% endfor %}
+                      </div>
+                      </div>
+
+
+                    </div>
+{% endblock %}
