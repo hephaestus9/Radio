@@ -2,7 +2,6 @@ Radio
 =====
 
 Upcycled Radio 
-Project Page: [Radio] (http://hackaday.io/project/1251-radio)
 >Flash Ubuntu to eMMC
 >Login: ubuntu
 >Password: temppwd
